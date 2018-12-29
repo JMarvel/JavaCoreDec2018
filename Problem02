@@ -1,0 +1,113 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
+import java.text.DecimalFormat;
+import java.math.RoundingMode;
+
+
+public class Series {
+    //Если декларируешь несколько классов в одном файле, основной файл должен быть сверху, чтобы ты знал, что исполняется
+//но в принципе вообще было необязательно делать отдельный класс для запуска кода, просто обявить метод main в этом классе
+    //РЕФАКНУЛ. ОБЪЯВИЛ MAIN() ТУТ.
+
+    private static final char EPS_CHAR = 0x03B5;
+    private static final int MARGINAL_CASE = 1;
+
+    private double epsilon = 0;
+    
+    //это необязательно)
+    /*
+     * Я ЧИТАЛ В ПАРЕ КНИГ, ЧТО, ЧТОБЫ НЕ ЗАБЫВАТЬ, КАКИЕ ПЕРЕМЕННЫЕ ПОПАДАЮТ ПОД DEFAULT INITIALIZATION, А КАКИЕ - НЕТ,
+     * ЛУЧШЕ ПРОСТО ВЗЯТЬ ЗА ПРАКТИКУ СРАЗУ ИНИЦИАЛИЗИРОВАТЬ ВСЁ ДЕФОЛТОМ.
+     */
+
+    public Series() {
+        System.out.println("Hey there! Name's Series. I'm a classy class.\n"
+                            + "I'll fetch you the number of the minimal element of the series "
+                            + "a_n = 1 / (n + 1)^2,\nsuch that a_n < " + EPS_CHAR + ", and all "
+                            + "a_i < a_n for which that condition is true.\n");
+                            
+        //обрати внимание на длину строки, слишком много символов в одной
+        // УКОРОТИЛ, РАЗБИЛ
+
+        //можно было просто закончить предыдующую строку с \n
+        //СДЕЛАЛ
+    }
+    //вообще в джаве довольно редко бывают случаи, когда мы на уровне пакета пишем какие-то protected классы
+    //обычно это надо для каких-то низкоуровневых (отсносительно) сервисов
+    //необязательно выносить в отдельный метод код, если ты вызываешь его всего один раз во время жизненного цикла объекта
+    //но даже если такой метод нужен, лучше делать его приватным или протектед
+    //УБРАЛ НАПРЯМУЮ В КОНСТРУКТОР
+
+    public double getEpsilon() {
+        return epsilon;
+    }
+
+    // вот посмотри доклад Бугаенко, который я тебе скинул) свойство эпсилон это все таки не свойство объекта,
+    // а результат некоторой работы
+    //необязательно его вообще хранить внутри объекта, так как сам по себе он всё-таки исполнитель
+    // в данном случае это не ошибка, просто надо понимать, зачем мы результат нашей работы вообще сохраняем
+    // можно сохранять только для кеширования например (в отдельную коллекцию или массив)
+    /* ПОКА НЕ СТАЛ МЕНЯТЬ. ПОСОМТРЮ ВИДОСИК И ИМПЛЕМЕНТИРУЮ В СЛЕДУЮЩИХ ЗАДАЧАХ */
+
+    public void setEpsilon(double epsilon) {
+        this.epsilon = epsilon;
+    }
+
+    private double readEpsilon() {
+        Scanner sc = new Scanner(System.in);
+        double epsilon = 0;
+        System.out.println("Enter " + EPS_CHAR     //такие штуки лучше выносить в отдельную статическую файнал переменную класса
+                            + " (integer or floating point):");
+        // ВЫНЕС
+
+        while (true) {
+            try {
+                epsilon = sc.nextDouble();
+                return epsilon;               //можно просто return epsilon   GOOD POINT, ЗАПОМНИЛ
+            } catch (InputMismatchException exc) {
+                System.out.println("Trying to fool me? Enter an integer or a floating point number, will ya:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    //все-таки лучше указывать модификатор доступа для методов
+    //УКАЗАЛ ДЛЯ ВСЕХ
+
+    private void doMath() {
+
+        double a_n = 1;
+        int n = 0;
+
+        DecimalFormat df = new DecimalFormat("#.####");
+        df.setRoundingMode(RoundingMode.CEILING);
+
+        if (epsilon >= MARGINAL_CASE) { //немножко бест практисес - если ты используешь какую-то строку или число для сравнения,
+                                        //лучше тоже выносить в статик файнал
+                                         //даже если это 0 или 1, это нужно для улучшения ридабилити
+                                        // СДЕЛАЛ
+            System.out.println("All elements of the series are less than " + EPS_CHAR + ".");
+            //вот ты её используешь еще и несколько раз,
+            //лучше вынести)
+            // СДЕЛАЛ
+        } else {
+            System.out.println("The list of a_i, i = 1 ... n, such that a_n < " + EPS_CHAR + " is as follows:");
+            while (a_n > epsilon) {
+                System.out.println("a_" + n + ":\t" + df.format(a_n));
+                a_n = 1 / Math.pow((++n + 1),2);
+            }
+            System.out.println("a_" + n + ":\t" + df.format(a_n));
+            System.out.println("The number n is:\t" + n);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        Series series = new Series();
+        series.setEpsilon(series.readEpsilon());  //очень плохая практика - выполнять бизнес-логику непосредственно в конструкторе
+        //лучше вынести его в отдельный метод и вызывать его при необходимости
+        //а у тебя еще и получается значительная часть выполнения программы происходит в конструкторе
+        //ПЕРЕНЁС В МЭЙН
+        series.doMath();
+    }
+}
