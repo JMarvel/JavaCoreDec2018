@@ -1,0 +1,79 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Matrix {
+
+    private int[][] matrix;
+    private static final int ZERO = 0;
+
+    // Constructor - displays greeting
+    Matrix() {
+        System.out.println("Hey there! I'm a classy class. Name's Matrix.\n"
+                + "I'll help you design an n x n square matrix with diagonals"
+                + "filled with 1's and the rest of the matrix with 0's.\n");
+    }
+
+    // Getter
+    public int[][] getMatrix() {
+        return matrix;
+    }
+
+    //Setter
+    public void setMatrix(int[][] matrix) {
+        this.matrix = matrix;
+    }
+
+    /*
+     * A method that reads the size of the matrix from the console doing some validations
+     * (checks that the size is positive).
+     */
+    private int readMatrixSize() {
+
+        int matrixSize = 0;
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the size of the matrix (any positive integer):");
+
+        while (true) {
+            try {
+                matrixSize = sc.nextInt();
+                if (matrixSize <= ZERO) {
+                    System.out.println("You entered a non-positive number."
+                            + "Please enter a positive number:");
+                    sc.nextLine();
+                } else return matrixSize;
+            } catch (InputMismatchException exc) {
+                System.out.println("Your input seems to be invalid. Please enter a single positive number:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    // A method that constructs the matrix of 0's and 1's of a given size.
+    private int[][] constructMatrix(int matrixSize) {
+
+        int[][] matrix = new int[matrixSize][matrixSize];
+
+        for (int row = 0; row < matrixSize; row++)
+            for (int col = 0; col < matrixSize; col++)
+            {
+                matrix[row][col] = ((row == col) || (row + col == matrixSize - 1)) ? 1 : 0;
+            }
+        return matrix;
+    }
+
+    // A method that prints the matrix to the console.
+    private void printMatrix () {
+        for (int row = 0; row < matrix.length; row++) {
+            for (int col = 0; col < matrix[0].length; col++)
+                System.out.print(matrix[row][col] + " ");
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        Matrix myMatrix = new Matrix();
+        myMatrix.setMatrix(myMatrix.constructMatrix(myMatrix.readMatrixSize()));
+        myMatrix.printMatrix();
+    }
+}
