@@ -1,0 +1,163 @@
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class Tangent {
+
+    private double a = 0.0; // Left end of the segment
+    private double b = 0.0; // Right end of the segment
+    private double h = 0.0; // Increment
+
+    private static final double ZERO = 0.0; // Constant for comparisons
+
+    static DecimalFormat df; // Using this class so that floating point numbers look pretty
+
+    static {
+        df = new DecimalFormat("#.####");
+        df.setRoundingMode(RoundingMode.CEILING);
+    }
+
+    // Constructor - displays greeting
+    Tangent () {
+        System.out.println("Hey there! I'm a classy class. Name's Tangent.\n"
+                + "I'll help you calculate F(x) = tg(2x) - 3 on any given segment"
+                + " [a, b] with an increment of h.\n\n");
+    }
+
+    // Getters
+    public double getA() { return a; }
+
+    public double getB() { return b; }
+
+    public double getH() { return h; }
+
+    // Setters
+    public void setA(double a) { this.a = a; }
+
+    public void setB(double b) { this.b = b; }
+
+    public void setH(double h) { this.h = h; }
+
+    /*
+     * A method that reads the left end of the segment doing some validation on the way
+     * (checks that the entered number is indeed a floating point number).
+     */
+    private double readA() {
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter a, the left end of the segment [a, b] (any floating point number):");
+
+        while (true) {
+            try {
+                return(sc.nextDouble());
+            } catch (InputMismatchException exc) {
+                System.out.println("Seems your input is invalid. Please enter "
+                                    + "any floating point number:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    /*
+     * A method that reads the right end of the segment doing some validation on the way
+     * (checks that the entered number is indeed a floating point number + that it's greater
+     * than the left end of the segment.
+     */
+    private double readB() {
+
+        double b = 0.0;
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter b, the right end of the segment [a, b]"
+                            + "(any floating point number greater than a):");
+
+        while (true) {
+            try {
+                b = sc.nextDouble();
+                if (b <= this.a) {
+                    System.out.println("The number is not greater than a. Enter a number that's "
+                                       + "greater than " + Tangent.df.format(this.a) + ".");
+                    continue;
+                }
+                return(b);
+            } catch (InputMismatchException exc) {
+                System.out.println("Seems your input is invalid. Please enter"
+                        + "any floating point number greater than a:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    /*
+     * A method that reads the increment doing some validation on the way
+     * (checks that it's positive and that it's less than the length of the segment
+     * allowing the user to confirm or re-enter).
+     */
+    private double readH() {
+
+        double h = 0.0;
+        String userInput = null;
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter h, the increment (any positive floating point number):");
+
+        while (true) {
+            try {
+                h = sc.nextDouble();
+                if (h <= ZERO) {
+                    System.out.println("You entered a non-positive increment. Enter a positive number:");
+                    continue;
+                }
+                if (h >= (this.b - this.a)) {
+                    System.out.println("The increment is greater than or equal to the segment's length."
+                                       + "Only F(a) and F(b) will be calculated. Are you sure? [Y]es / [N]o");
+                    sc.nextLine();
+                    while (true) {
+                        userInput = sc.nextLine();
+                        if (userInput.equalsIgnoreCase("Y")) {
+                            return h;
+                        } else if (userInput.equalsIgnoreCase("N")) {
+                            System.out.println("Re-enter the increment:");
+                            break;
+                        } else {
+                            System.out.println("The input is invalid. Enter Y or N.");
+                        }
+                    }
+                } else {
+                    return h;
+                }
+            } catch (InputMismatchException exc) {
+                System.out.println("Seems your input is invalid. Please enter any positive number:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    /*
+     * Method that calculates the function on the segment at the given increments and prints
+     * the results into a table.
+     */
+    private void calculateTg() {
+
+        double currentArg = a;
+
+        System.out.print("The function F(x) = tg(2x) - 3 on the segment [" + df.format(a)
+                        + ", " + df.format(b) + "] with an increment of " + df.format(h)
+                        + " is as follows:\n");
+
+        while (currentArg <= b) {
+            System.out.println(df.format(currentArg) + "\t\t" + df.format(Math.tan(2 * currentArg) - 3));
+            currentArg += h;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        Tangent tg = new Tangent();
+        tg.setA(tg.readA());
+        tg.setB(tg.readB());
+        tg.setH(tg.readH());
+        tg.calculateTg();
+    }
+}
