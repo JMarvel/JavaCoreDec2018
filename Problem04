@@ -1,0 +1,107 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Array {
+
+    private double[] array;
+    private static final int ZERO = 0;
+
+    // Constructor - displays greeting
+    Array() {
+        System.out.println("Hey there! I'm a classy class. Name's Array.\n"
+                            + "I'll help you calculate max(a_1 + a_2n, a_2 + a_2n-1,..."
+                            + ", a_n + a_n+1) for a series of real numbers a_1, ... a_2n.\n");
+    }
+
+    // Getter
+    public double[] getArray() {
+        return array;
+    }
+
+    //Setter
+    public void setArray(double[] array) {
+        this.array = array;
+    }
+
+    /*
+     * A method that reads the size of the array from the console doing some validations
+     * (checks that the size is positive and an even number).
+     */
+    private int readArraySize() {
+
+        int arraySize = 0;
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the size of the array (any positive even integer):");
+
+        while (true) {
+            try {
+                arraySize = sc.nextInt();
+                if (arraySize <= ZERO) {
+                    System.out.println("You entered a non-positive number."
+                                        + "Please enter a positive even number:");
+                    sc.nextLine();
+                } else if (arraySize % 2 != 0) {
+                    System.out.println("You entered an odd number. Please enter a positive even number:");
+                    sc.nextLine();
+                } else return arraySize;
+            } catch (InputMismatchException exc) {
+                System.out.println("Your input seems to be invalid. Please enter a single positive even number:");
+                sc.nextLine();
+            }
+        }
+    }
+
+    /*
+     * A method that sequentially reads array elements doing validation
+     * (that the input is a real number).
+     */
+    private double[] readArray(int arraySize) {
+
+        array = new double[arraySize];
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter " + arraySize + " real numbers separated by spaces:");
+
+        for (int i = 0; i < arraySize; i++) {
+            while (true) {
+                try {
+                    array[i] = sc.nextDouble();
+                    break;
+                } catch (InputMismatchException exc) {
+                    System.out.println("Your input #" + (i + 1) + " is invalid. "
+                            + "Re-enter and enter " + (arraySize - i - 1) + " more.");
+                    sc.nextLine();
+                }
+            }
+        }
+        return array;
+    }
+
+    /*
+     * A method that performs the calculation.
+     */
+    private void calculateMax(double[] array) {
+
+        int maxIndex1 = 0;
+        int maxIndex2 = array.length - 1;
+        double max = array[maxIndex1] + array[maxIndex2];
+
+        for(int i = 1; i < array.length / 2; i++) {
+            if (array[i] + array[array.length - i - 1] > max) {
+                maxIndex1 = i;
+                maxIndex2 = array.length - i - 1;
+                max = array[i] + array[array.length - i - 1];
+            }
+        }
+        System.out.println("The maximum equals " + max + " at positions " + maxIndex1
+                           + " and " + maxIndex2 + ".");
+    }
+
+    public static void main(String[] args) {
+        Array series = new Array();
+        series.setArray(series.readArray(series.readArraySize()));
+        series.calculateMax(series.array);
+    }
+}
