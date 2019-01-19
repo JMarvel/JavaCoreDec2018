@@ -86,7 +86,7 @@ class OfficeSupplies {
 
 class OfficePlankton {
 
-    /* Is it ok to store an array of class objects as that class' variable? */
+    // Is it ok to store an array of class objects as that class' variable?
     private static ArrayList<OfficePlankton> planktons = new ArrayList<>();
     private static int planktonsCount;
 
@@ -169,7 +169,10 @@ class OfficePlankton {
         System.out.println("The total cost of stationery for " + plankton.toString() + " is: $" +
                 plankton.calculateStationeryCost() + ".");
     }
-
+    
+    // The method that calculates the cost of all stationery for a given office worker -
+    // should it be a method of the OfficePlankton class or OfficeStationery class?
+    // I can't figure this logic-wise.
     private double calculateStationeryCost() {
         double result = 0;
         for (OfficeSupplies element : this.stationery)
@@ -237,6 +240,7 @@ class MainMenu {
     }
 }
 
+// How about this IO class? Would it be better to implement input / output inside the other classes?
 class IO {
 
     static final Scanner sc = new Scanner(System.in);
